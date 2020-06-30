@@ -1,0 +1,12 @@
+{
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5433,
+  "username": "fattylee",
+  "password": "fattylee",
+  "database": "ideas",
+  "synchronize": true,
+  "logging": true,
+  "entities": ["dist/**/*.entity.js"]
+}
+
