@@ -1,0 +1,20 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Child {
+  id: String!
+  name: String!
+  father: Father!
+}
+
+type Father {
+  id: String!
+  name: String!
+  age: Float!
+  childrens: [Child]
+}
+
+type Query {
+  father: [Father!]
+}
