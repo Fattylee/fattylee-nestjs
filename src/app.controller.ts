@@ -9,21 +9,21 @@ import {
   Res,
   Body,
 } from '@nestjs/common';
-import { AppService, ProductService } from './app.service';
+import { AppService } from './app.service';
 import { Request, Response } from 'express';
 
 @Controller()
 export class AppController {
   constructor(
-    private readonly appService: AppService,
-    private readonly producService: ProductService,
+    private readonly appService: AppService, // private readonly producService: ProductService,
   ) {}
 
   @Get()
   @HttpCode(230)
   getHello(): string {
-    return this.producService.getProducts();
+    // return this.producService.getProducts();
     // return this.appService.getHello();
+    return 'hello, world';
   }
 
   @Get('fat')

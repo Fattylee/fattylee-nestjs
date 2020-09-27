@@ -1,10 +1,10 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Father } from './father.model';
+import { FatherEntity } from '../father/father.entity';
 
 @ObjectType()
 @Entity()
-export class Child {
+export class ChildEntity {
   @PrimaryGeneratedColumn('uuid')
   @Field()
   id: string;
@@ -14,9 +14,11 @@ export class Child {
   name: string;
 
   @ManyToOne(
-    () => Father,
+    () => FatherEntity,
     father => father.childrens,
   )
-  @Field(() => Father)
-  father: Father;
+  @Field(() => FatherEntity, { nullable: true })
+  father: FatherEntity;
+
+  @Column() fatherId: string;
 }

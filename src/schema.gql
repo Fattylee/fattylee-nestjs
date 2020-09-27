@@ -2,19 +2,30 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Child {
+type ChildEntity {
   id: String!
   name: String!
-  father: Father!
+  father: FatherEntity
 }
 
-type Father {
+type FatherEntity {
   id: String!
   name: String!
   age: Float!
-  childrens: [Child]
+  childrens: [ChildEntity]
 }
 
 type Query {
-  father: [Father!]
+  children: [ChildEntity!]!
+  fathers: [FatherEntity!]
+  father(id: String!): FatherEntity
+}
+
+type Mutation {
+  createChild(data: CreateChildInput!, id: String!): ChildEntity!
+  createFather(name: String!, age: Int!): FatherEntity!
+}
+
+input CreateChildInput {
+  name: String!
 }

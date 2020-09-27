@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
-import { AppService, ProductService } from './app.service';
+import { AppService } from './app.service';
 import { ProductModule } from './products/products.module';
 import { UserModule } from './users/users.module';
 import { IdeaModule } from './idea/idea.module';
@@ -11,8 +11,14 @@ import { ShopModule } from './shop/shop.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { FatherModule } from './father/father.module';
-import { Father } from './father/father.model';
-import { Child } from './father/child.model';
+import { FatherEntity } from './father/father.entity';
+import { ChildEntity } from './child/child.entity';
+import { ChildModule } from './child/child.module';
+import { CatsModule } from './cats/cats.module';
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { ExceptionErrorFilter } from './exception-error.filter';
+import { LoggingInterceptor } from './shared/logging.interceptor';
+import { ValidationPipe } from './shared/validation.pipe';
 
 @Module({
   imports: [
@@ -26,10 +32,10 @@ import { Child } from './father/child.model';
       synchronize: true,
       logging: true,
       dropSchema: false,
-      entities: [Father, Child, 'dist/**/*.entity.js'],
+      entities: ['dist/**/*.entity.js'],
     }),
-    IdeaModule,
-    ProfileModule,
+    // IdeaModule,
+    // ProfileModule,
     // BookModule,
     // ShopModule,
     // RecipeModule,
@@ -44,9 +50,27 @@ import { Child } from './father/child.model';
     //     outputAs: 'class',
     //   },
     // }),
-    FatherModule,
+    // FatherModule,
+    // ChildModule,
+    CatsModule,
+    UserModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, ProductService],
+  controllers: [],
+  providers: [
+    AppService,
+    // ProductService,
+    {
+      provide: APP_FILTER,
+      useClass: ExceptionErrorFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
+    },
+  ],
 })
 export class AppModule {}

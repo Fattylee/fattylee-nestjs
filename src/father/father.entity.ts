@@ -1,10 +1,10 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Child } from './child.model';
+import { ChildEntity } from '../child/child.entity';
 
 @ObjectType()
 @Entity()
-export class Father {
+export class FatherEntity {
   @PrimaryGeneratedColumn('uuid')
   @Field()
   id: string;
@@ -18,9 +18,9 @@ export class Father {
   age: number;
 
   @OneToMany(
-    () => Child,
+    () => ChildEntity,
     child => child.father,
   )
-  @Field(() => [Child], { nullable: 'itemsAndList' })
-  childrens: Child[];
+  @Field(() => [ChildEntity], { nullable: 'itemsAndList' })
+  childrens: ChildEntity[];
 }
