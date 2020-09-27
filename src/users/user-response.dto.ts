@@ -5,5 +5,7 @@ export class UserResponseDTO {
 
   created: Date;
 
+  message?: string;
+
   token?: string;
 }

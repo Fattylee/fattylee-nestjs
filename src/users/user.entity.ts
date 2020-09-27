@@ -37,11 +37,22 @@ export class UserEntity {
     return sign({ id, username }, process.env.SECRET, { expiresIn: '7d' });
   }
 
-  toResponseObject(showToken = true): UserResponseDTO {
+  toResponseObject({
+    message = 'Successful',
+    showToken = true,
+  }: {
+    showToken?: boolean;
+    message?: string;
+  } = {}): UserResponseDTO {
     const { id, username, created } = this;
-    const response: UserResponseDTO = { id, username, created };
+    const response: UserResponseDTO = { id, username, created, message };
     if (showToken) response.token = this.token;
 
     return response;
+  }
+
+  async verifyPassword(password: string): Promise<boolean> {
+    const isValid = await bcrypt.compare(password, this.password);
+    return isValid;
   }
 }

@@ -26,7 +26,7 @@ export class ExceptionErrorFilter implements ExceptionFilter {
       path: url,
       method,
       message: (exception as any).message,
-      error: (exception as any).response.error,
+      // error: (exception as any).response.error,
       // (exception && exception) || status === 500
       // ? 'Internal Server Error'
       // : undefined,
