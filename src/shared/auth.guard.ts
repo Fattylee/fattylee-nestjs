@@ -11,9 +11,9 @@ import { verify } from 'jsonwebtoken';
 @Injectable()
 export class AuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
-    const auth = context.switchToHttp().getRequest<Request>().headers
-      .authorization;
-    const req = context.switchToHttp().getRequest();
+    const req: any = context.switchToHttp().getRequest<Request>();
+
+    const auth = req.headers.authorization;
 
     if (!auth) return false;
     // throw new HttpException(

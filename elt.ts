@@ -35,12 +35,26 @@ const axios = _axios.create({ baseURL: 'http://localhost:5000/api/v1/' });
     //   password: 'njncjncdwd',
     // });
 
-    const { data } = await axios.get('users', {
-      headers: {
-        authorization:
-          'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI1NWFlOTdkLWJjOWEtNDQzYS1iM2Y0LTk3YWZiYzdhMjIyNCIsInVzZXJuYW1lIjoiZmF0dHlsZWUiLCJpYXQiOjE2MDEyNDA0OTIsImV4cCI6MTYwMTg0NTI5Mn0.0F9wsda12Bc_C4URjTRY6btz8u_NAUj7QnAWWjnZO_E',
+    // const { data } = await axios.get('users', {
+    //   headers: {
+    //     authorization:
+    //       'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI1NWFlOTdkLWJjOWEtNDQzYS1iM2Y0LTk3YWZiYzdhMjIyNCIsInVzZXJuYW1lIjoiZmF0dHlsZWUiLCJpYXQiOjE2MDEyNDA0OTIsImV4cCI6MTYwMTg0NTI5Mn0.0F9wsda12Bc_C4URjTRY6btz8u_NAUj7QnAWWjnZO_E',
+    //   },
+    // });
+
+    // const { data } = await axios.get('ideas');
+
+    // const { data } = await axios.post('ideas', {
+    //   idea: 'idea 2',
+    //   description: 'ideas keep evolving, is something ...',
+    // });
+
+    const { data } = await axios.put(
+      'ideas/3d3611f-ed70-4012-bf61-c49ff6b007bf',
+      {
+        idea: 'idea 3',
       },
-    });
+    );
 
     console.log(data);
   } catch (ex) {

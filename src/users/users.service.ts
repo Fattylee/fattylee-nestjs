@@ -9,6 +9,7 @@ import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
 import { UserDTO } from './dto/user.dto';
 import { UserResponseDTO } from './user-response.dto';
+import { Response } from 'express';
 
 @Injectable()
 export class UserService {
@@ -37,7 +38,10 @@ export class UserService {
     return user.toResponseObject();
   }
 
-  async login({ username, password }: UserDTO): Promise<UserResponseDTO> {
+  async login(
+    { username, password }: UserDTO,
+    res: Response<UserResponseDTO>,
+  ): Promise<Response<UserResponseDTO>> {
     const user = await this.userRepo.findOne({ where: { username } });
     if (!user)
       throw new HttpException(
@@ -52,6 +56,12 @@ export class UserService {
         HttpStatus.BAD_REQUEST,
       );
 
-    return user.toResponseObject({ message: 'login successfully' });
+    res.header('x-auth', user.token);
+    return res.send(
+      user.toResponseObject({
+        message: 'login successfully',
+        // showToken: false,
+      }),
+    );
   }
 }

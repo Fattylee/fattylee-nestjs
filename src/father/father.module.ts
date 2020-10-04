@@ -12,10 +12,13 @@ import { ChildEntity } from 'src/child/child.entity';
   imports: [
     ChildModule,
     TypeOrmModule.forFeature([FatherEntity, ChildEntity]),
-    GraphQLModule.forRoot({
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-    }),
+    // GraphQLModule.forRoot({
+    //   autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+    // }),
   ],
-  providers: [FatherResolver, FatherService],
+  providers: [
+    //FatherResolver,
+    FatherService,
+  ],
 })
 export class FatherModule {}

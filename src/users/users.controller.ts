@@ -5,6 +5,8 @@ import {
   HttpCode,
   Get,
   UseGuards,
+  Res,
+  Header,
 } from '@nestjs/common';
 
 import { UserService } from './users.service';
@@ -13,6 +15,7 @@ import { UserResponseDTO } from './user-response.dto';
 import { UserEntity } from './user.entity';
 import { AuthGuard } from 'src/shared/auth.guard';
 import { UserPayload } from 'src/shared/user.decorator';
+import { Response } from 'express';
 
 @Controller('users')
 export class UserController {
@@ -31,8 +34,12 @@ export class UserController {
   }
 
   @HttpCode(200)
+  @Header('baba', 'fattylee')
   @Post('login')
-  async login(@Body() credentials: UserDTO): Promise<any> {
-    return this.userService.login(credentials);
+  async login(
+    @Body() credentials: UserDTO,
+    @Res() res: Response,
+  ): Promise<Response<UserResponseDTO>> {
+    return this.userService.login(credentials, res);
   }
 }

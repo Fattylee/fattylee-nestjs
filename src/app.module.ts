@@ -19,22 +19,23 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ExceptionErrorFilter } from './exception-error.filter';
 import { LoggingInterceptor } from './shared/logging.interceptor';
 import { ValidationPipe } from './shared/validation.pipe';
+import { UserResolver } from './users/user.resolver';
 
 @Module({
   imports: [
+    GraphQLModule.forRoot({ typePaths: ['**/*.graphql', '**/*.gql'] }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
       port: 5433,
       username: 'fattylee',
       password: 'fattylee',
-      database: 'ideas',
+      database: 'ideas_app',
       synchronize: true,
       logging: true,
       dropSchema: false,
       entities: ['dist/**/*.entity.js'],
     }),
-    // IdeaModule,
     // ProfileModule,
     // BookModule,
     // ShopModule,
@@ -54,10 +55,12 @@ import { ValidationPipe } from './shared/validation.pipe';
     // ChildModule,
     CatsModule,
     UserModule,
+    IdeaModule,
   ],
   controllers: [],
   providers: [
     AppService,
+    UserResolver,
     // ProductService,
     {
       provide: APP_FILTER,

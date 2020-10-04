@@ -6,20 +6,24 @@ import {
   Put,
   Body,
   Param,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { IdeaService } from './idea.service';
+import { IdeaEntity } from './idea.entity';
+import { IdeaDTO } from './idea.dto';
 
 @Controller('ideas')
 export class IdeaController {
   constructor(private readonly ideaService: IdeaService) {}
+
   @Get()
-  async showAllIdeas() {
-    return await this.ideaService.showAll();
+  showAllIdeas() {
+    return this.ideaService.showAll();
   }
 
   @Post()
-  async createIdea(@Body() body: { idea: string; description: string }) {
-    return await this.ideaService.createIdea(body);
+  createIdea(@Body() body: IdeaDTO) {
+    return this.ideaService.createIdea(body);
   }
 
   @Get(':id')
