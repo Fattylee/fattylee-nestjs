@@ -9,8 +9,8 @@ import {
   Header,
 } from '@nestjs/common';
 
-import { UserService } from './users.service';
-import { UserDTO } from './dto/user.dto';
+import { UserService } from './user.service';
+import { UserDTO, UserRO } from './dto/user.dto';
 import { UserResponseDTO } from './user-response.dto';
 import { UserEntity } from './user.entity';
 import { AuthGuard } from 'src/shared/auth.guard';
@@ -22,9 +22,8 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  @UseGuards(AuthGuard)
-  async fetchUsers(@UserPayload() payload: unknown): Promise<UserEntity[]> {
-    console.log('Pay:', payload);
+  // @UseGuards(AuthGuard)
+  async fetchUsers(): Promise<UserRO[]> {
     return this.userService.getUsers();
   }
 

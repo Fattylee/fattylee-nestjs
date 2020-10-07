@@ -60,7 +60,6 @@ import { UserResolver } from './users/user.resolver';
   controllers: [],
   providers: [
     AppService,
-    UserResolver,
     // ProductService,
     {
       provide: APP_FILTER,

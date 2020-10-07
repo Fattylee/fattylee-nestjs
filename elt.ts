@@ -49,13 +49,14 @@ const axios = _axios.create({ baseURL: 'http://localhost:5000/api/v1/' });
     //   description: 'ideas keep evolving, is something ...',
     // });
 
-    const { data } = await axios.put(
-      'ideas/3d3611f-ed70-4012-bf61-c49ff6b007bf',
-      {
-        idea: 'idea 3',
-      },
-    );
+    // const { data } = await axios.put(
+    //   'ideas/3d3611f-ed70-4012-bf61-c49ff6b007bf',
+    //   {
+    //     idea: 'idea 3',
+    //   },
+    // );
 
+    const { data } = await axios.get('ideas');
     console.log(data);
   } catch (ex) {
     console.log(ex.response.data);

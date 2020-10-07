@@ -6,6 +6,8 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { sign, verify } from 'jsonwebtoken';
@@ -34,11 +36,19 @@ export class UserEntity {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  // @OneToMany(
-  //   () => IdeaEntity,
-  //   idea => idea.author,
-  // )
-  // ideas: IdeaEntity[];
+  @OneToMany(
+    () => IdeaEntity,
+    idea => idea.author,
+    // { eager: true },
+  )
+  ideas: IdeaEntity[];
+
+  @ManyToMany(() => IdeaEntity, {
+    cascade: true,
+    // eager: true,
+  })
+  @JoinTable()
+  bookmarks: IdeaEntity[];
 
   get token(): string {
     const { id, username } = this;
@@ -46,7 +56,7 @@ export class UserEntity {
   }
 
   toResponseObject({
-    message = 'Successful',
+    message = undefined,
     showToken = true,
   }: {
     showToken?: boolean;
@@ -55,7 +65,7 @@ export class UserEntity {
     const { id, username, created } = this;
     const response: UserResponseDTO = { id, username, created, message };
     if (showToken) response.token = this.token;
-
+    if (this.bookmarks) response.bookmarks = this.bookmarks;
     return response;
   }
 

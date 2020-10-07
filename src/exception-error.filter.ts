@@ -12,7 +12,8 @@ import { Response, Request } from 'express';
 export class ExceptionErrorFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
-    const { url, method } = ctx.getRequest<Request>();
+    const req = ctx.getRequest<Request>();
+    const { url, method } = req;
     const res = ctx.getResponse<Response>();
 
     const status =
@@ -26,18 +27,24 @@ export class ExceptionErrorFilter implements ExceptionFilter {
       path: url,
       method,
       message: (exception as any).message,
+      error:
+        status !== HttpStatus.INTERNAL_SERVER_ERROR
+          ? (exception.message as any).error || exception.message || null
+          : 'Internal server error',
       // error: (exception as any).response.error,
       // (exception && exception) || status === 500
       // ? 'Internal Server Error'
       // : undefined,
     };
 
-    Logger.error(
-      `${method} ${url} ` +
-        JSON.stringify({ ...errorResponse, error: (exception as any).stack }),
-      'ExceptionErrorFilter',
-    );
+    if (req) {
+      Logger.error(
+        `${method} ${url} ` +
+          JSON.stringify({ ...errorResponse, error: (exception as any).stack }),
+        'ExceptionErrorFilter',
+      );
 
-    res.status(status).json(errorResponse);
+      res.status(status).json(errorResponse);
+    }
   }
 }

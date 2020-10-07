@@ -1,3 +1,5 @@
+import { IdeaEntity } from 'src/idea/idea.entity';
+
 export class UserResponseDTO {
   id: string;
 
@@ -8,4 +10,6 @@ export class UserResponseDTO {
   message?: string;
 
   token?: string;
+
+  bookmarks?: IdeaEntity[];
 }

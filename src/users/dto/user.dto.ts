@@ -9,3 +9,11 @@ export class UserDTO {
   @Length(5)
   password: string;
 }
+
+export interface UserRO {
+  id: string;
+  username: string;
+  created: Date;
+  token?: string;
+  message?: string;
+}

@@ -16,10 +16,7 @@ export class AuthGuard implements CanActivate {
     const auth = req.headers.authorization;
 
     if (!auth) return false;
-    // throw new HttpException(
-    //   'Validation error: Authorization token is required',
-    //   HttpStatus.FORBIDDEN,
-    // );
+
     const [bearer, token] = auth.split(/\s+/);
 
     if (bearer.toLowerCase() !== 'bearer') {

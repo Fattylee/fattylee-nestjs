@@ -4,7 +4,7 @@ import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FatherEntity } from './father.entity';
 import { ChildModule } from 'src/child/child.module';
-import { FatherResolver } from './father.resolver';
+// import { FatherResolver } from './father.resolver';
 import { FatherService } from './father.service';
 import { ChildEntity } from 'src/child/child.entity';
 

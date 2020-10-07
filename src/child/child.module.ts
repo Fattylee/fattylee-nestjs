@@ -3,7 +3,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChildEntity } from './child.entity';
-import { ChildResolver } from './child.resolver';
+// import { ChildResolver } from './child.resolver';
 import { ChildService } from './child.service';
 import { FatherEntity } from 'src/father/father.entity';
 
