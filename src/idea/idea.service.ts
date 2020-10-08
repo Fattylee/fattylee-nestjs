@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { IdeaDTO, IdeaRO } from './idea.dto';
 import { UserEntity } from 'src/users/user.entity';
 import { validateOrReject } from 'class-validator';
+import { Votes } from './idea.enum';
 
 @Injectable()
 export class IdeaService {
@@ -107,28 +108,17 @@ export class IdeaService {
 
     this.logData({ id, data: payload, user: userId });
 
-    const test: any = new IdeaDTO();
-    test.pap = 'pap';
-    console.log(test, test);
-    const test2 = new IdeaDTO();
-    console.log(Object.assign(test2, { last: 'last' }));
-    console.log('test2', test2);
     const obj = new IdeaDTO();
     Object.assign(obj, payload);
-    (obj as any).list = 'kkook';
-    console.log(obj);
 
     try {
-      const validValues = await validateOrReject(obj, {
+      await validateOrReject(obj, {
         skipUndefinedProperties: true,
         forbidUnknownValues: true,
         whitelist: true,
       });
 
-      console.log(validValues);
-      console.log('======================');
       Object.assign(idea, payload);
-      console.log(idea);
       await this.ideaRepository.save(idea);
       return this.toResponseObject(idea);
     } catch (errors) {
@@ -174,13 +164,11 @@ export class IdeaService {
     const idea = await this.ideaRepository.findOne(id);
     if (!idea) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
 
-    console.log(idea, '====================');
     const user = await this.userRepository.findOne(userId, {
       relations: ['bookmarks'],
     });
 
     if (user.bookmarks.find(ideaBookmark => ideaBookmark.id === idea.id)) {
-      console.log('i was here', '=====================');
       user.bookmarks = user.bookmarks.filter(
         ideaBookmark => ideaBookmark.id !== idea.id,
       );
@@ -190,5 +178,75 @@ export class IdeaService {
     }
 
     return user.toResponseObject({ showToken: false });
+  }
+
+  async upvotes(id: string, userId: string) {
+    const idea = await this.ideaRepository.findOne(id, {
+      relations: ['author', Votes.DOWN, Votes.UP],
+    });
+
+    if (!idea) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+
+    const user = await this.userRepository.findOne(userId, {
+      relations: ['bookmarks'],
+    });
+
+    if (user.id === idea.author.id) {
+      throw new HttpException(
+        'Cannot cast vote on self-idea',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    if (!idea) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+
+    if (idea.upvotes.find(author => author.id === userId)) {
+      // already voted
+      idea.upvotes = idea.upvotes.filter(author => author.id !== userId);
+      // throw new HttpException('Already voted', HttpStatus.FORBIDDEN);
+    } else {
+      // cast vote
+      idea.upvotes.push(user);
+      // remove existing downvotes if any
+      idea.downvotes = idea.downvotes.filter(author => author.id !== userId);
+    }
+
+    await this.ideaRepository.save(idea);
+
+    return this.toResponseObject(idea);
+  }
+
+  async downvotes(id: string, userId: string) {
+    const idea = await this.ideaRepository.findOne(id, {
+      relations: ['author', Votes.DOWN, Votes.UP],
+    });
+
+    if (!idea) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+
+    const user = await this.userRepository.findOne(userId, {
+      relations: ['bookmarks'],
+    });
+
+    if (user.id === idea.author.id) {
+      throw new HttpException(
+        'Cannot cast vote on self-idea',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    if (!idea) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+
+    if (idea.downvotes.find(author => author.id === userId)) {
+      // already downvoted
+      idea.downvotes = idea.downvotes.filter(author => author.id !== userId);
+      // throw new HttpException('Already voted', HttpStatus.FORBIDDEN);
+    } else {
+      // cast vote
+      idea.downvotes.push(user);
+      // remove existing downvotes if any
+      idea.upvotes = idea.upvotes.filter(author => author.id !== userId);
+    }
+
+    await this.ideaRepository.save(idea);
+
+    return this.toResponseObject(idea);
   }
 }

@@ -12,4 +12,6 @@ export class UserResponseDTO {
   token?: string;
 
   bookmarks?: IdeaEntity[];
+
+  ideas?: IdeaEntity[];
 }

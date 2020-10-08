@@ -66,4 +66,19 @@ export class IdeaController {
   unbookmark(@Param('id') id: string, @UserPayload('id') userId: string) {
     return this.ideaService.unbookmark(id, userId);
   }
+
+  @Post(':id/upvotes')
+  @UseGuards(new AuthGuard())
+  upvotes(@Param('id', ParseUUIDPipe) id, @UserPayload('id') userId: string) {
+    return this.ideaService.upvotes(id, userId);
+  }
+
+  @Post(':id/downvotes')
+  @UseGuards(new AuthGuard())
+  downvotes(
+    @Param('id', ParseUUIDPipe) id: string,
+    @UserPayload('id', ParseUUIDPipe) userId: string,
+  ) {
+    return this.ideaService.downvotes(id, userId);
+  }
 }

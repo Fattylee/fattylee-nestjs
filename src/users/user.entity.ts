@@ -65,7 +65,10 @@ export class UserEntity {
     const { id, username, created } = this;
     const response: UserResponseDTO = { id, username, created, message };
     if (showToken) response.token = this.token;
+
     if (this.bookmarks) response.bookmarks = this.bookmarks;
+
+    if (this.ideas) response.ideas = this.ideas;
     return response;
   }
 
