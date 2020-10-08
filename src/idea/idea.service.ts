@@ -6,6 +6,7 @@ import { IdeaDTO, IdeaRO } from './idea.dto';
 import { UserEntity } from 'src/users/user.entity';
 import { validateOrReject } from 'class-validator';
 import { Votes } from './idea.enum';
+import { string } from 'yargs';
 
 @Injectable()
 export class IdeaService {
@@ -51,6 +52,25 @@ export class IdeaService {
     id && this.logger.log(`IDEA: ${id}`);
     data && this.logger.log(`DATA: ${JSON.stringify(data)}`);
     user && this.logger.log(`USER: ${user}`);
+  }
+
+  private async vote(idea: IdeaEntity, user: UserEntity, vote: Votes) {
+    const opposite = vote === Votes.UP ? Votes.DOWN : Votes.UP;
+    const userId = user.id;
+
+    // already (un)voted
+    if (idea[vote].find(author => author.id === userId)) {
+      // remove (un)vote
+      idea[vote] = idea[vote].filter(author => author.id !== userId);
+    } else {
+      // cast (un)vote
+      idea[vote].push(user);
+      // remove existing opposite if any
+      idea[opposite] = idea[opposite].filter(author => author.id !== userId);
+    }
+
+    await this.ideaRepository.save(idea);
+    return idea;
   }
 
   async showAll(): Promise<IdeaRO[]> {
@@ -199,19 +219,7 @@ export class IdeaService {
     }
     if (!idea) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
 
-    if (idea.upvotes.find(author => author.id === userId)) {
-      // already voted
-      idea.upvotes = idea.upvotes.filter(author => author.id !== userId);
-      // throw new HttpException('Already voted', HttpStatus.FORBIDDEN);
-    } else {
-      // cast vote
-      idea.upvotes.push(user);
-      // remove existing downvotes if any
-      idea.downvotes = idea.downvotes.filter(author => author.id !== userId);
-    }
-
-    await this.ideaRepository.save(idea);
-
+    await this.vote(idea, user, Votes.UP);
     return this.toResponseObject(idea);
   }
 
@@ -232,21 +240,9 @@ export class IdeaService {
         HttpStatus.UNAUTHORIZED,
       );
     }
+
     if (!idea) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
 
-    if (idea.downvotes.find(author => author.id === userId)) {
-      // already downvoted
-      idea.downvotes = idea.downvotes.filter(author => author.id !== userId);
-      // throw new HttpException('Already voted', HttpStatus.FORBIDDEN);
-    } else {
-      // cast vote
-      idea.downvotes.push(user);
-      // remove existing downvotes if any
-      idea.upvotes = idea.upvotes.filter(author => author.id !== userId);
-    }
-
-    await this.ideaRepository.save(idea);
-
-    return this.toResponseObject(idea);
+    return this.toResponseObject(await this.vote(idea, user, Votes.DOWN));
   }
 }
