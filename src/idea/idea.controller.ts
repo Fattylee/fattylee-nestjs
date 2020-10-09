@@ -14,6 +14,7 @@ import { IdeaService } from './idea.service';
 import { IdeaDTO } from './idea.dto';
 import { AuthGuard } from 'src/shared/auth.guard';
 import { UserPayload } from 'src/shared/user.decorator';
+import { FatBody } from 'src/video/video.dto';
 
 @Controller('ideas')
 export class IdeaController {

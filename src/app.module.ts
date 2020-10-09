@@ -20,10 +20,18 @@ import { ExceptionErrorFilter } from './exception-error.filter';
 import { LoggingInterceptor } from './shared/logging.interceptor';
 import { ValidationPipe } from './shared/validation.pipe';
 import { UserResolver } from './users/user.resolver';
+import { VideoModule } from './video/video.module';
 
 @Module({
   imports: [
-    GraphQLModule.forRoot({ typePaths: ['**/*.graphql', '**/*.gql'] }),
+    GraphQLModule.forRoot({
+      // typePaths: ['**/*.graphql', '**/*.gql'],
+      typePaths: ['./**/*.graphql'],
+      definitions: {
+        outputAs: 'class',
+        path: join(process.cwd(), './src/graphql.ts'),
+      },
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -53,9 +61,10 @@ import { UserResolver } from './users/user.resolver';
     // }),
     // FatherModule,
     // ChildModule,
-    CatsModule,
+    // CatsModule,
     UserModule,
     IdeaModule,
+    VideoModule,
   ],
   controllers: [],
   providers: [
