@@ -18,12 +18,32 @@ export class UserService {
     private readonly userRepo: Repository<UserEntity>,
   ) {}
 
-  async getUsers(): Promise<UserRO[]> {
-    const users = await this.userRepo.find({
-      relations: ['ideas', 'bookmarks'],
-      // select: ['id', 'username', 'created'],
+  async fetchAUser(id: string) {
+    const user = await this.userRepo.findOne(id, {
+      relations: ['bookmarks', 'comments', 'ideas'],
     });
-    return users.map(user => user.toResponseObject({ showToken: false }));
+
+    if (!user) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+
+    return user.toResponseObject({ showToken: false });
+  }
+
+  async getUsers(page = 1, amount = 25): Promise<UserRO[]> {
+    if (page < 1 || amount < 1)
+      throw new HttpException(
+        'Page/amount number must be greater than 0',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const users = await this.userRepo.find({
+      relations: ['ideas', 'bookmarks', 'comments'],
+      take: amount,
+      skip: amount * (page - 1),
+    });
+
+    return users.map(user => {
+      return user.toResponseObject({ showToken: false });
+    });
   }
 
   async createUser(userPayload: UserDTO): Promise<UserResponseDTO> {
@@ -42,10 +62,7 @@ export class UserService {
     return user.toResponseObject();
   }
 
-  async login(
-    { username, password }: UserDTO,
-    res: Response<UserResponseDTO>,
-  ): Promise<Response<UserResponseDTO>> {
+  async login({ username, password }: UserDTO): Promise<UserResponseDTO> {
     const user = await this.userRepo.findOne({ where: { username } });
     if (!user)
       throw new HttpException(
@@ -60,11 +77,8 @@ export class UserService {
         HttpStatus.BAD_REQUEST,
       );
 
-    res.header('x-auth', user.token);
-    return res.send(
-      user.toResponseObject({
-        message: 'login successfully',
-      }),
-    );
+    return user.toResponseObject({
+      message: 'login successfully',
+    });
   }
 }

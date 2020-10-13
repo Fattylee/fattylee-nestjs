@@ -6,7 +6,6 @@ import { IdeaDTO, IdeaRO } from './idea.dto';
 import { UserEntity } from 'src/users/user.entity';
 import { validateOrReject } from 'class-validator';
 import { Votes } from './idea.enum';
-import { string } from 'yargs';
 
 @Injectable()
 export class IdeaService {
@@ -31,7 +30,6 @@ export class IdeaService {
     };
 
     if (responseObject.upvotes) responseObject.upvotes = idea.upvotes.length;
-    // if (idea.upvotes) responseObject.upvotes = idea.upvotes.length;
 
     if (idea.downvotes) responseObject.downvotes = idea.downvotes.length;
 
@@ -73,19 +71,27 @@ export class IdeaService {
     return idea;
   }
 
-  async showAll(): Promise<IdeaRO[]> {
+  async showAll(page = 1, newest = false): Promise<IdeaRO[]> {
     const ideas = await this.ideaRepository.find({
-      order: { created: -1 },
-      relations: ['author', 'downvotes', 'upvotes'],
+      order: newest && { created: -1 },
+      skip: 25 * (page - 1),
+      take: 25,
+      relations: [
+        'author',
+        'author.ideas',
+        'downvotes',
+        'upvotes',
+        // 'comments',
+        // 'comments.author',
+      ],
     });
 
-    console.log(ideas);
     return ideas.map(idea => this.toResponseObject(idea));
   }
 
   async getAIdea(id: string): Promise<IdeaRO> {
     const idea = await this.ideaRepository.findOne(id, {
-      relations: ['author'],
+      relations: ['author', 'comments', 'comments.author'],
     });
 
     if (!idea) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
@@ -107,8 +113,10 @@ export class IdeaService {
     });
 
     if (!idea) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+
     this.ensureOwnership(idea, userId);
-    await this.ideaRepository.delete({ id });
+    await this.ideaRepository.remove(idea);
+
     return this.toResponseObject(idea);
   }
 
@@ -167,7 +175,7 @@ export class IdeaService {
     if (!idea) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
 
     const user = await this.userRepository.findOne(userId, {
-      relations: ['bookmarks'],
+      relations: ['bookmarks', 'comments', 'ideas'],
     });
 
     if (user.bookmarks.find(ideaBookmark => ideaBookmark.id === idea.id)) {

@@ -43,7 +43,6 @@ export class LoggingInterceptor implements NestInterceptor {
             ),
           ),
         );
-      // return next.handle().pipe(tap(() => logger.log('hello================')));
     }
   }
 }

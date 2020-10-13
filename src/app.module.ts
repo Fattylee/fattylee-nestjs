@@ -21,16 +21,20 @@ import { LoggingInterceptor } from './shared/logging.interceptor';
 import { ValidationPipe } from './shared/validation.pipe';
 import { UserResolver } from './users/user.resolver';
 import { VideoModule } from './video/video.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
     GraphQLModule.forRoot({
-      // typePaths: ['**/*.graphql', '**/*.gql'],
-      typePaths: ['./**/*.graphql'],
+      typePaths: ['**/*.graphql', '**/*.gql'],
       definitions: {
         outputAs: 'class',
         path: join(process.cwd(), './src/graphql.ts'),
       },
+      context: ({ req, res }) => ({
+        req,
+        res,
+      }),
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -65,6 +69,7 @@ import { VideoModule } from './video/video.module';
     UserModule,
     IdeaModule,
     VideoModule,
+    CommentModule,
   ],
   controllers: [],
   providers: [

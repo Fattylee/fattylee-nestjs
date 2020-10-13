@@ -1,16 +1,65 @@
 type Query {
-  name: String
-  users: [User!]!
+  users(page: Int, amount: Int): [User!]!
+  # ideas(page: Int, newest: Boolean): [Idea!]!
+  ideas(data: IdeaInput): [Idea!]!
+  idea(id: String!): Idea!
+  comments: [Comment!]!
+  whoami: User!
+}
+
+type Mutation {
+  createComment(ideaId: String!, userId: String!, comment: String!): Comment!
+  login(credentials: LoginInput): Auth!
+  register(credentials: LoginInput): Auth!
+  createIdea(data: IdeaPayloadInput): Idea!
+  updateIdea(id: String!, data: IdeaPayloadInput): Idea!
+}
+
+type Auth {
+  username: String!
+  token: String!
+}
+
+input IdeaPayloadInput {
+  idea: String!
+  description: String!
+}
+
+input LoginInput {
+  username: String!
+  password: String!
+}
+
+input IdeaInput {
+  page: Int
+  newest: Boolean
 }
 
 type User {
+  id: ID!
   username: String!
-  password: String!
-  created: String
-  updated: String
+  created: String!
+  updated: String!
   ideas: [Idea!]
+  comments: [Comment!]
+  bookmarks: [Idea!]
+}
+
+type Comment {
+  id: ID!
+  comment: String!
+  author: User!
+  idea: Idea!
 }
 
 type Idea {
   id: ID!
+  idea: String!
+  description: String!
+  created: String!
+  updated: String!
+  author: User!
+  upvotes: Int!
+  downvotes: Int!
+  comments: [Comment!]!
 }

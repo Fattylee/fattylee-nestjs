@@ -7,8 +7,10 @@ import {
   ManyToOne,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from 'typeorm';
 import { UserEntity } from 'src/users/user.entity';
+import { CommentEntity } from 'src/comment/comment.entity';
 
 @Entity('ideas')
 export class IdeaEntity {
@@ -25,21 +27,28 @@ export class IdeaEntity {
   @ManyToOne(
     () => UserEntity,
     user => user.ideas,
-    { eager: true },
+    // { eager: true },
   )
   author: UserEntity;
 
   @ManyToMany(() => UserEntity, {
     cascade: true,
-    eager: true,
+    // eager: true,
   })
   @JoinTable()
   upvotes: UserEntity[];
 
   @ManyToMany(() => UserEntity, {
     cascade: true,
-    eager: true,
+    // eager: true,
   })
   @JoinTable()
   downvotes: UserEntity[];
+
+  @OneToMany(
+    () => CommentEntity,
+    comment => comment.idea,
+    { cascade: true },
+  )
+  comments: CommentEntity[];
 }

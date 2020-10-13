@@ -10,9 +10,10 @@ import {
   JoinTable,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import { sign, verify } from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 import { UserResponseDTO } from './user-response.dto';
 import { IdeaEntity } from 'src/idea/idea.entity';
+import { CommentEntity } from 'src/comment/comment.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -39,16 +40,20 @@ export class UserEntity {
   @OneToMany(
     () => IdeaEntity,
     idea => idea.author,
-    // { eager: true },
   )
   ideas: IdeaEntity[];
 
   @ManyToMany(() => IdeaEntity, {
     cascade: true,
-    // eager: true,
   })
   @JoinTable()
   bookmarks: IdeaEntity[];
+
+  @OneToMany(
+    () => CommentEntity,
+    comment => comment.author,
+  )
+  comments: CommentEntity[];
 
   get token(): string {
     const { id, username } = this;
@@ -69,6 +74,8 @@ export class UserEntity {
     if (this.bookmarks) response.bookmarks = this.bookmarks;
 
     if (this.ideas) response.ideas = this.ideas;
+
+    if (this.comments) response.comments = this.comments;
     return response;
   }
 

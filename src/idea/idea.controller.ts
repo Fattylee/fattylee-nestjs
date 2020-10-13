@@ -8,21 +8,25 @@ import {
   Param,
   ParseUUIDPipe,
   UseGuards,
-  ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { IdeaService } from './idea.service';
 import { IdeaDTO } from './idea.dto';
 import { AuthGuard } from 'src/shared/auth.guard';
 import { UserPayload } from 'src/shared/user.decorator';
-import { FatBody } from 'src/video/video.dto';
 
 @Controller('ideas')
 export class IdeaController {
   constructor(private readonly ideaService: IdeaService) {}
 
   @Get()
-  showAllIdeas() {
-    return this.ideaService.showAll();
+  showAllIdeas(@Query('page') page: number) {
+    return this.ideaService.showAll(page);
+  }
+
+  @Get('newest')
+  showAllIdeasNewest(@Query('page') page: number) {
+    return this.ideaService.showAll(page, true);
   }
 
   @Post()

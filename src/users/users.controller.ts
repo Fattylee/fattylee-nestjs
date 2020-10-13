@@ -7,6 +7,10 @@ import {
   UseGuards,
   Res,
   Header,
+  Param,
+  ParseUUIDPipe,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 
 import { UserService } from './user.service';
@@ -22,9 +26,16 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  // @UseGuards(AuthGuard)
-  async fetchUsers(): Promise<UserRO[]> {
-    return this.userService.getUsers();
+  async fetchUsers(
+    @Query('page') page: number,
+    @Query('amount') amount: number,
+  ): Promise<UserRO[]> {
+    return this.userService.getUsers(page, amount);
+  }
+
+  @Get(':id')
+  async fetchAUser(@Param('id', ParseUUIDPipe) id: string): Promise<UserRO> {
+    return this.userService.fetchAUser(id);
   }
 
   @Post('register')
@@ -33,12 +44,8 @@ export class UserController {
   }
 
   @HttpCode(200)
-  @Header('baba', 'fattylee')
   @Post('login')
-  async login(
-    @Body() credentials: UserDTO,
-    @Res() res: Response,
-  ): Promise<Response<UserResponseDTO>> {
-    return this.userService.login(credentials, res);
+  async login(@Body() credentials: UserDTO): Promise<any> {
+    return this.userService.login(credentials);
   }
 }
