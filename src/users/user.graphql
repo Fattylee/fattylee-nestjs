@@ -13,6 +13,11 @@ type Mutation {
   register(credentials: LoginInput): Auth!
   createIdea(data: IdeaPayloadInput): Idea!
   updateIdea(id: String!, data: IdeaPayloadInput): Idea!
+  deleteIdea(id: String!): Idea!
+  upvoteIdea(id: String!): Idea!
+  downvoteIdea(id: String!): Idea!
+  bookmark(id: String!): User!
+  unbookmark(id: String!): User!
 }
 
 type Auth {
@@ -41,7 +46,7 @@ type User {
   created: String!
   updated: String!
   ideas: [Idea!]
-  comments: [Comment!]
+  comments: [Comment!]!
   bookmarks: [Idea!]
 }
 
@@ -53,7 +58,7 @@ type Comment {
 }
 
 type Idea {
-  id: ID!
+  id: ID
   idea: String!
   description: String!
   created: String!

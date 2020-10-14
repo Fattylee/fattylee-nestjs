@@ -18,16 +18,24 @@ export class IdeaService {
 
   private ensureOwnership(idea: IdeaEntity, userId: string) {
     if (idea.author.id !== userId)
-      throw new HttpException('Incorrect user', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'You do not own this idea entity',
+        HttpStatus.UNAUTHORIZED,
+      );
   }
 
   private toResponseObject(idea: IdeaEntity): IdeaRO {
     const responseObject: any = {
       ...idea,
-      author: idea.author.toResponseObject({
-        showToken: false,
-      }),
+      // author: idea.author.toResponseObject({
+      // showToken: false,
+      // }),
     };
+
+    if (responseObject.author)
+      responseObject.author = idea.author.toResponseObject({
+        showToken: false,
+      });
 
     if (responseObject.upvotes) responseObject.upvotes = idea.upvotes.length;
 
@@ -77,9 +85,9 @@ export class IdeaService {
       skip: 25 * (page - 1),
       take: 25,
       relations: [
-        'author',
-        'author.ideas',
-        'downvotes',
+        // 'author',
+        // 'author.ideas',
+        // 'downvotes',
         'upvotes',
         // 'comments',
         // 'comments.author',
@@ -105,6 +113,28 @@ export class IdeaService {
     idea.author = user;
     await this.ideaRepository.save(idea);
     return this.toResponseObject(idea);
+  }
+
+  async findAuthorByIdeaId(ideaId: string) {
+    const idea = await this.ideaRepository.findOne({
+      where: { id: ideaId },
+      relations: ['author'],
+    });
+
+    if (!idea)
+      throw new HttpException('Author not found', HttpStatus.NOT_FOUND);
+    console.log(idea);
+    return idea.author;
+  }
+
+  async findUpvotesCountByIdeaId(ideaId: string) {
+    const idea = await this.ideaRepository.findOne(ideaId, {
+      // where: { id: ideaId },
+      relations: ['upvotes'],
+    });
+
+    if (!idea) throw new HttpException('Idea not found', HttpStatus.NOT_FOUND);
+    return idea.upvotes.length;
   }
 
   async deleteIdea(id: string, userId: string): Promise<IdeaRO> {
@@ -172,11 +202,15 @@ export class IdeaService {
 
   async bookmark(id: string, userId: string) {
     const idea = await this.ideaRepository.findOne(id);
+
     if (!idea) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
 
-    const user = await this.userRepository.findOne(userId, {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
       relations: ['bookmarks', 'comments', 'ideas'],
     });
+
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
     if (user.bookmarks.find(ideaBookmark => ideaBookmark.id === idea.id)) {
       throw new HttpException('idea already bookmarked', HttpStatus.CONFLICT);
@@ -195,6 +229,8 @@ export class IdeaService {
     const user = await this.userRepository.findOne(userId, {
       relations: ['bookmarks'],
     });
+
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
     if (user.bookmarks.find(ideaBookmark => ideaBookmark.id === idea.id)) {
       user.bookmarks = user.bookmarks.filter(

@@ -40,6 +40,7 @@ export class UserEntity {
   @OneToMany(
     () => IdeaEntity,
     idea => idea.author,
+    { onDelete: 'CASCADE' },
   )
   ideas: IdeaEntity[];
 

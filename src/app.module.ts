@@ -22,6 +22,7 @@ import { ValidationPipe } from './shared/validation.pipe';
 import { UserResolver } from './users/user.resolver';
 import { VideoModule } from './video/video.module';
 import { CommentModule } from './comment/comment.module';
+import { DatabaseConnectionService } from './database-connection.service';
 
 @Module({
   imports: [
@@ -36,18 +37,19 @@ import { CommentModule } from './comment/comment.module';
         res,
       }),
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5433,
-      username: 'fattylee',
-      password: 'fattylee',
-      database: 'ideas_app',
-      synchronize: true,
-      logging: true,
-      dropSchema: false,
-      entities: ['dist/**/*.entity.js'],
-    }),
+    TypeOrmModule.forRootAsync({ useClass: DatabaseConnectionService }),
+    // TypeOrmModule.forRoot({
+    //   type: 'postgres',
+    //   host: 'localhost',
+    //   port: 5433,
+    //   username: 'fattylee',
+    //   password: 'fattylee',
+    //   database: 'ideas_app',
+    //   synchronize: true,
+    //   logging: true,
+    //   dropSchema: false,
+    //   entities: ['dist/**/*.entity.js'],
+    // }),
     // ProfileModule,
     // BookModule,
     // ShopModule,
@@ -87,6 +89,7 @@ import { CommentModule } from './comment/comment.module';
       provide: APP_PIPE,
       useClass: ValidationPipe,
     },
+    // DatabaseConnectionService,
   ],
 })
 export class AppModule {}

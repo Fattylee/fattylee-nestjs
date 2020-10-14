@@ -63,6 +63,7 @@ export class IdeaController {
   @Post(':id/bookmark')
   @UseGuards(new AuthGuard())
   bookmark(@Param('id') id: string, @UserPayload('id') userId: string) {
+    console.log(userId, '==========username=====================');
     return this.ideaService.bookmark(id, userId);
   }
 
@@ -85,5 +86,10 @@ export class IdeaController {
     @UserPayload('id', ParseUUIDPipe) userId: string,
   ) {
     return this.ideaService.downvotes(id, userId);
+  }
+
+  @Get('user-idea/:id')
+  findauthorBYideaId(@Param('id') id: string) {
+    return this.ideaService.findAuthorByIdeaId(id);
   }
 }

@@ -52,6 +52,18 @@ export abstract class IMutation {
 
     abstract createIdea(data?: IdeaPayloadInput): Idea | Promise<Idea>;
 
+    abstract updateIdea(id: string, data?: IdeaPayloadInput): Idea | Promise<Idea>;
+
+    abstract deleteIdea(id: string): Idea | Promise<Idea>;
+
+    abstract upvoteIdea(id: string): Idea | Promise<Idea>;
+
+    abstract downvoteIdea(id: string): Idea | Promise<Idea>;
+
+    abstract bookmark(id: string): User | Promise<User>;
+
+    abstract unbookmark(id: string): User | Promise<User>;
+
     abstract createVideo(input?: NewVideoInput): Video | Promise<Video>;
 }
 
@@ -66,7 +78,7 @@ export class User {
     created: string;
     updated: string;
     ideas?: Idea[];
-    comments?: Comment[];
+    comments: Comment[];
     bookmarks?: Idea[];
 }
 
@@ -78,7 +90,7 @@ export class Comment {
 }
 
 export class Idea {
-    id: string;
+    id?: string;
     idea: string;
     description: string;
     created: string;

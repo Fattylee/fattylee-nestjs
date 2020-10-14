@@ -24,10 +24,13 @@ export class IdeaEntity {
 
   @Column('text') description: string;
 
+  @Column('text') authorId: string;
+
   @ManyToOne(
     () => UserEntity,
     user => user.ideas,
     // { eager: true },
+    { cascade: true, onDelete: 'CASCADE', nullable: true, onUpdate: 'CASCADE' },
   )
   author: UserEntity;
 

@@ -11,6 +11,7 @@ import {
   ParseUUIDPipe,
   Query,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 
 import { UserService } from './user.service';
@@ -47,5 +48,11 @@ export class UserController {
   @Post('login')
   async login(@Body() credentials: UserDTO): Promise<any> {
     return this.userService.login(credentials);
+  }
+
+  @Delete()
+  @UseGuards(new AuthGuard())
+  deleteUser(@UserPayload('id') id: string) {
+    return this.userService.deleteUser(id);
   }
 }

@@ -32,6 +32,18 @@ export class CommentService {
     return comments.map(comment => this.toResponseObject(comment));
   }
 
+  async findOne(id: string) {
+    const comment = await this.commentRepository.findOne({
+      where: { id },
+      relations: ['idea', 'author'],
+    });
+
+    if (!comment)
+      throw new HttpException('Comment not found', HttpStatus.NOT_FOUND);
+
+    return this.toResponseObject(comment);
+  }
+
   async createComment(ideaId: string, userId: string, comment: string) {
     const idea = await this.ideaRepository.findOne(ideaId);
 

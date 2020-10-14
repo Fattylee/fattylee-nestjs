@@ -81,4 +81,18 @@ export class UserService {
       message: 'login successfully',
     });
   }
+
+  async findBookmarksByUserId(userId: string) {
+    const user = await this.userRepo.findOne(userId, {
+      relations: ['bookmarks'],
+    });
+
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+
+    return user.bookmarks;
+  }
+
+  async deleteUser(userId: string) {
+    return await this.userRepo.delete({ id: userId });
+  }
 }

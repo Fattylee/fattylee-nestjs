@@ -31,6 +31,11 @@ export class CommentController {
     return this.commentService.findAllComments();
   }
 
+  @Get(':id')
+  comment(@Param('id') id: string) {
+    return this.commentService.findOne(id);
+  }
+
   @Get('idea/:id')
   findCommentsByIdea(@Param('id') id: string) {
     return this.commentService.findByIdea(id);

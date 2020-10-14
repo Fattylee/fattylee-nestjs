@@ -19,6 +19,7 @@ export class CommentEntity {
   @ManyToOne(
     () => IdeaEntity,
     idea => idea.comments,
+    { onDelete: 'CASCADE' },
   )
   idea: IdeaEntity;
 }

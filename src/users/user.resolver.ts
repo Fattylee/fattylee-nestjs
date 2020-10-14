@@ -37,6 +37,11 @@ export class UserResolver {
     return this.commentService.findByUser(id);
   }
 
+  @ResolveProperty()
+  bookmarks(@Parent() { id }: UserRO) {
+    return this.userService.findBookmarksByUserId(id);
+  }
+
   @Mutation()
   login(@Args('credentials') data: UserDTO) {
     return this.userService.login(data);

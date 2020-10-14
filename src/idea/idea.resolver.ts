@@ -14,6 +14,7 @@ import { IdeaDTO } from './idea.dto';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/shared/auth.guard';
 import { UserPayload } from 'src/shared/user.decorator';
+import { UserEntity } from 'src/users/user.entity';
 
 @Resolver('Idea')
 export class IdeaResolver {
@@ -38,8 +39,21 @@ export class IdeaResolver {
   }
 
   @ResolveProperty()
-  comments(@Parent() { id }: IdeaEntity) {
-    return this.commentService.findByIdea(id);
+  async comments(@Parent() idea: IdeaEntity) {
+    const { id } = idea;
+    const comments = await this.commentService.findByIdea(id);
+    return comments;
+  }
+
+  @ResolveProperty()
+  author(@Parent() idea: IdeaEntity) {
+    return this.ideaService.findAuthorByIdeaId(idea.id);
+  }
+
+  @ResolveProperty()
+  upvotes(@Parent() idea: IdeaEntity) {
+    // return this.ideaService.findUpvotesCountByIdeaId(idea.id);
+    return 8;
   }
 
   @Mutation()
